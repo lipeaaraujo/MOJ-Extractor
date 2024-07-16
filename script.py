@@ -12,7 +12,7 @@ args = parser.parse_args()
 def derive_login_url(contest_url):
   return contest_url.replace("contest.sh", "login.sh")
 
-def init_session():
+def init_login_session():
   # login url and data
   login_url = derive_login_url(args.url)
   login_data = {
@@ -37,7 +37,23 @@ def init_session():
       request_contest(session)
     else:
       print(f'error on login: {login_response.status_code}')
-  
+
+def parse_contest(soup):
+  content_div = soup.find(id="text")
+  problem_ulist = content_div.find('ul')
+  problems = problem_ulist.find_all('li')
+
+  with open('contest.md', 'w') as output:      
+    for problem in problems:
+      letter = problem.find('b').text.strip()
+      title = problem.get_text().split('-')[1].strip()
+      link = problem.find('a')['href']
+      
+      formatted_problem = f'{letter} - {title}\n\n{link}\n\n'
+      
+      output.write(formatted_problem)
+      
+
 def request_contest(session):
   # use url and get HTTP response
   url = args.url
@@ -45,9 +61,9 @@ def request_contest(session):
 
   if response.status_code == 200:
     soup = BeautifulSoup(response.content, 'html.parser')
-    print(soup.prettify())
+    parse_contest(soup)
 
   else:
     print(f'error on getting response from url: {response.status_code}')
     
-init_session()
+init_login_session()
