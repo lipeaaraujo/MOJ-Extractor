@@ -43,17 +43,24 @@ def parse_contest(soup):
   problem_ulist = content_div.find('ul')
   problems = problem_ulist.find_all('li')
 
-  with open('contest.md', 'w') as output:      
+  with open('contest.md', 'w') as output:
+    # contest title and description
+    output.write('# (Contest title)\n\n')
+    output.write('(description here)\n\n')
+    
+    # write each problem on output
     for problem in problems:
       letter = problem.find('b').text.strip()
       title = problem.get_text().split('-')[1].strip()
       link = problem.find('a')['href']
       
-      formatted_problem = f'{letter} - {title}\n\n{link}\n\n'
-      
+      # problem
+      formatted_problem = f'## {letter} - {title}\n\n{link}\n\n'
       output.write(formatted_problem)
       
-
+      # solution
+      output.write("- **[Solution]()**\n\n")
+      
 def request_contest(session):
   # use url and get HTTP response
   url = args.url
