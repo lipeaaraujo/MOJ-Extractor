@@ -54,7 +54,8 @@ def parse_contest(soup):
     # write each problem to the output file
     for problem in problems:
       letter = problem.find('b').text.strip()
-      title = problem.get_text().split('-')[1].strip()
+      title_elements = problem.get_text().split('-')[1:-1]
+      title = '-'.join(title_elements).strip()
       link = problem.find('a')['href']
       
       # format each problem
